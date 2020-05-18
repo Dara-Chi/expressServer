@@ -15,7 +15,7 @@ exports.create = (req, res) => {
     g_name: req.body.t_name,
   });
 
-  // Save Customer in the database
+  // Save Tag in the database
   Tag.create(tag, (err, data) => {
     if (err)
       res.status(500).send({
