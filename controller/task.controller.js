@@ -1,4 +1,4 @@
-const Customer = require("../models/task.model.js");
+const Task = require("../models/task.model.js");
 
 // Create and Save a new task
 exports.create = (req, res) => {
@@ -7,7 +7,7 @@ exports.create = (req, res) => {
 
 // Retrieve all tasks from the database.
 exports.findAll = (req, res) => {
-    Customer.getAll((err, data) => {
+    Task.getAll((err, data) => {
         if (err) {
             const message = err.message || "Some error occurred while retrieving customers.";
             res.status(500).json({ message });
