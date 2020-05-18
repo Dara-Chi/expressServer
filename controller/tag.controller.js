@@ -1,6 +1,6 @@
-const Task = require("../models/task.model.js");
+const Tag = require("../models/tag.model.js");
 
-// Create and Save a new task
+// Create and Save a new tag
 exports.create = (req, res) => {
     // Validate request
   if (!req.body) {
@@ -9,22 +9,14 @@ exports.create = (req, res) => {
     });
   }
 
-  // Create a Task
-  const task = new Task({
+  // Create a Tag
+  const tag = new Tag({
 
-    t_name: req.body.t_name,
-    t_priority: req.body.t_priority,
-    t_status: req.body.t_status,
-    t_description: req.body.t_description,
-    t_start_date: req.body.t_start_date,
-    t_due_date: req.body.t_due_date,
-    t_rec_id: req.body.t_rec_id,
-    t_group: req.body.t_group,
-    t_caregory: req.body.t_caregory
+    g_name: req.body.t_name,
   });
 
   // Save Customer in the database
-  Task.create(task, (err, data) => {
+  Tag.create(tag, (err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -35,9 +27,9 @@ exports.create = (req, res) => {
 
 };
 
-// Retrieve all tasks from the database.
+// Retrieve all tags from the database.
 exports.findAll = (req, res) => {
-    Task.getAll((err, data) => {
+    Tag.getAll((err, data) => {
         if (err) {
             const message = err.message || "Some error occurred while retrieving customers.";
             res.status(500).json({ message });
@@ -47,25 +39,25 @@ exports.findAll = (req, res) => {
     });
 };
 
-// Find a single task with a customerId
+// Find a single tags with a tag id/g_id
 exports.findOne = (req, res) => {
   
-    Task.findById(req.params.t_id, (err, data) => {
+    Tag.findById(req.params.g_id, (err, data) => {
         if (err) {
           if (err.kind === "not_found") {
             res.status(404).send({
-              message: `Not found Customer with id ${req.params.t_id}.`
+              message: `Not found Customer with id ${req.params.g_Id}.`
             });
           } else {
             res.status(500).send({
-              message: "Error retrieving Customer with id " + req.params.t_id
+              message: "Error retrieving Customer with id " + req.params.g_Id
             });
           }
         } else res.json(data);
       });
 };
 
-// Update a task identified by the task id in the request
+// Update a tags identified by the tag id/g_id in the request
 exports.update = (req, res) => {
     // Validate Request
   if (!req.body) {
@@ -74,18 +66,18 @@ exports.update = (req, res) => {
     });
   }
 
-  Task.updateById(
-    req.params.t_id,
+  Tag.updateById(
+    req.params.g_id,
     new Task(req.body),
     (err, data) => {
       if (err) {
         if (err.kind === "not_found") {
           res.status(404).send({
-            message: `Not found Customer with id ${req.params.t_id}.`
+            message: `Not found group/tag with id ${req.params.g_Id}.`
           });
         } else {
           res.status(500).send({
-            message: "Error updating Customer with id " + req.params.t_id
+            message: "Error updating group/tag with id " + req.params.g_Id
           });
         }
       } else res.json(data);

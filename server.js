@@ -23,7 +23,8 @@ res.json({ message: "Welcome to bezkoder application." });
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
-
+require("./route/tag.routes.js")(app);
+require("./route/list.routes.js")(app);
 require("./route/task.routes.js")(app);
 
 app.listen(PORT, () => {
