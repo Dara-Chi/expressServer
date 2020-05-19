@@ -12,7 +12,7 @@ exports.create = (req, res) => {
   // Create a Tag
   const tag = new Tag({
 
-    g_name: req.body.t_name,
+    g_name: req.body.g_name,
   });
 
   // Save Tag in the database

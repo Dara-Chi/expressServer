@@ -1,10 +1,21 @@
 const sql = require("./db.js");
 
 const List = function(list){
-
-    this.c_id = list.c_id;
-    this,c_name = list.c_name;
+    this.c_name = list.c_name;
 }
+
+List.create = (newList, result) => {
+  sql.query("INSERT INTO Category SET ?", newList, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    console.log("created customer: ", { id: res.insertId, ...newList });
+    result(null, { id: res.insertId, ...newList });
+  });
+};
 
 List.getAll = result => {
     sql.query("SELECT * FROM CATEGORY", (err, res) => {
@@ -56,6 +67,7 @@ List.getAll = result => {
       result(null, res);
     });
   };
+
 
   
 

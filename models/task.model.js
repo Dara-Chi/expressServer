@@ -2,21 +2,21 @@
 const sql = require("./db.js");
 
 // constructor
-const Task = function(task) {
-  this.t_id = task.t_name;
-  this.t_name = task.name;
-  this.t_user = task.active;
-  this.t_priority = task.t_priority;
-  this.t_status = task.t_status;
-  this.t_description = task.t_description;
-  this.t_start_date = task.t_start_date;
-  this.t_due_date = task.t_due_date;
-  this.t_rec_id = task.t_rec_id;
-  this.t_group =task.t_group;
-  this.t_caregory = task.t_caregory;
-  this.t_active = task.t_active;
+const Task = function (task) {
+  this.id = task.id;
+  this.name = task.name;
+  this.priority = task.priority;
+  this.status = task.status;
+  this.description = task.description;
+  this.startDate = task.startDate;
+  this.dueDate = task.dueDate;
+  this.recId = task.recId;
+  this.group = task.group;
+  this.category = task.category;
+  this.recurring = task.recurring;
+  this.frequency = task.frequency;
+  this.times = task.times;
 };
-
 
 
 Task.getAll = result => {
@@ -52,17 +52,84 @@ Task.getAll = result => {
   };
 
   Task.create = (newTask, result) => {
-    sql.query("INSERT INTO Task SET ?", newTask, (err, res) => {
-      if (err) {
-        console.log("error: ", err);
-        result(err, null);
-        return;
-      }
+    if (newTask.recurring) {
   
-      console.log("created task: ", { id: res.insertId, ...newTask });
-      result(null, { id: res.insertId, ...newCustomer });
-    });
+      var valueListCrt = [newTask.recurring, newTask.frequency, newTask.times, newTask.startDate];
+      var sqlCrt = "INSERT INTO task_creation (tc_recurring, tc_frequency, tc_times, tc_start_date) VALUES (?)";
+  
+      //console.log(valueListCrt);
+      //run query to insert values into task table
+      sql.query(sqlCrt, [valueListCrt], function (err, res) {
+        if (err) {
+          console.log("[mysql error]", err);
+          result(err, null);
+          return;
+        } else {
+          global.newId = res.insertId;
+  
+          //console.log("Result: " + result);
+  
+          for (var i = 0; i < newTask.times; i++) {
+            var sDate = new Date(newTask.startDate);
+            var dDate = new Date(newTask.dueDate);
+            var recDates = [];
+            var sqlTsk = "INSERT INTO task (t_name, t_user, t_priority, t_status, t_description, t_start_date, t_due_date, t_rec_id, t_group, t_caregory, t_active) VALUES (?)";
+  
+            if (i > 0) {
+  
+              recDates = getRecDate(newTask.frequency, sDate, dDate, i);
+              sDate = recDates[0];
+              dDate = recDates[1];
+  
+            }
+  
+            valueListTsk = [newTask.name, 1, newTask.priority, newTask.status, newTask.description, sDate, dDate, global.newId, newTask.group, newTask.category, 1];
+  
+            //console.log(valueListTsk);
+            //run query to insert values into task table
+            sql.query(sqlTsk, [valueListTsk], function (err, res) {
+              if (err) {
+                console.log("[mysql error]", err);
+                result(err, null);
+                return;
+              }
+              message = "New task has been added!";
+              //console.log("Result: " + result);
+              //Note: send message to front-end during integration
+              console.log(message);
+              //result(null, { id: res.insertId, ...newTask });
+  
+            });
+          }
+  
+          result(null, "Task added!");
+  
+        }
+  
+      });
+    }
+    else {
+      valueListTsk = [newTask.name, 1, newTask.priority, newTask.status, newTask.description, newTask.startDate, newTask.dueDate, null, newTask.group, newTask.category, 1];
+  
+      var sqlTsk = "INSERT INTO task (t_name, t_user, t_priority, t_status, t_description, t_start_date, t_due_date, t_rec_id, t_group, t_caregory, t_active) VALUES (?)";
+      //console.log(valueListTsk);
+      //run query to insert values into task table
+      sql.query(sqlTsk, [valueListTsk], function (err, res) {
+        if (err) {
+          console.log("[mysql error]", err);
+          result(err, null);
+          return;
+        }
+        message = "New task has been added!";
+        //console.log("Result: " + result);
+        //Note: send message to front-end during integration
+        console.log(message);
+        result(null, { id: res.insertId, ...newTask });
+  
+      });
+    }
   };
+  
   
   Task.updateById = (id, task, result) => {
     sql.query(
@@ -96,7 +163,7 @@ Task.getAll = result => {
       }
   
       if (res.affectedRows == 0) {
-        // not found Customer with the id
+        // not found task with the id
         result({ kind: "not_found" }, null);
         return;
       }
@@ -107,4 +174,56 @@ Task.getAll = result => {
   };
   
 
+  /**
+* 
+* @param {String} freq 
+* @param {datetime} sdate 
+* @param {datetime} ddate 
+* @param {int} no 
+*/
+function getRecDate(freq, sdate, ddate, no) {
+  var dateArr = [];
+
+  switch (freq) {
+    case "daily":
+      sdate = add(sdate, {
+        days: no,
+      });
+      ddate = add(ddate, {
+        days: no,
+      });
+      break;
+    case "weekly":
+      sdate = add(sdate, {
+        weeks: no,
+      });
+      ddate = add(ddate, {
+        weeks: no,
+      });
+      break;
+    case "monthly":
+      sdate = add(sdate, {
+        months: no,
+      });
+      ddate = add(ddate, {
+        months: no,
+      });
+      break;
+    case "fortnightly":
+      sdate = add(sdate, {
+        weeks: (no * 2),
+      });
+      ddate = add(ddate, {
+        weeks: (no * 2),
+      });
+      break;
+  }
+
+  dateArr[0] = sdate;
+  dateArr[1] = ddate;
+
+  return dateArr;
+}
+
+module.exports = Task;
   module.exports = Task;

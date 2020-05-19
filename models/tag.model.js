@@ -1,10 +1,23 @@
 const sql = require("./db.js");
 
-const Tag = function(list){
-
-    this.c_id = list.c_id;
-    this,c_name = list.c_name;
+const Tag = function(tag){
+    this.g_name = tag.g_name;
 }
+
+
+Tag.create = (newTag, result) => {
+  sql.query("INSERT INTO Groupe SET ?", newTag, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    console.log("created new tag/group: ", { id: res.insertId, ...newTag });
+    result(null, { id: res.insertId, ...newTag });
+  });
+};
+
 
 Tag.getAll = result => {
     sql.query("SELECT * FROM GROUPE", (err, res) => {
