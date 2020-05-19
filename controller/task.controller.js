@@ -2,7 +2,7 @@ const Task = require("../models/task.model.js");
 
 // Create and Save a new task
 exports.create = (req, res) => {
-    // Validate request
+  // Validate request
   if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty!"
@@ -12,28 +12,31 @@ exports.create = (req, res) => {
   // Create a Task
   const task = new Task({
 
-    t_name: req.body.t_name,
-    t_priority: req.body.t_priority,
-    t_status: req.body.t_status,
-    t_description: req.body.t_description,
-    t_start_date: req.body.t_start_date,
-    t_due_date: req.body.t_due_date,
-    t_rec_id: req.body.t_rec_id,
-    t_group: req.body.t_group,
-    t_caregory: req.body.t_caregory
+    name: req.body.name,
+    priority: req.body.priority,
+    status: req.body.status,
+    description: req.body.description,
+    startDate: req.body.startDate,
+    dueDate: req.body.dueDate,
+    group: req.body.group,
+    category: req.body.category,
+    recurring: req.body.recurring,
+    frequency: req.body.frequency,
+    times: req.body.times
   });
 
-  // Save Customer in the database
+  // Save Task in the database
   Task.create(task, (err, data) => {
     if (err)
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating the task."
+          err.message || "An error occurred while creating the task."
       });
     else res.json(data);
   });
 
 };
+
 
 // Retrieve all tasks from the database.
 exports.findAll = (req, res) => {
