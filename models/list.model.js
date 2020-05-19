@@ -12,7 +12,7 @@ List.create = (newList, result) => {
       return;
     }
 
-    console.log("created customer: ", { id: res.insertId, ...newList });
+    console.log("created new list/category: ", { id: res.insertId, ...newList });
     result(null, { id: res.insertId, ...newList });
   });
 };
