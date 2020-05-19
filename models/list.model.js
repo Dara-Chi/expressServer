@@ -17,6 +17,76 @@ List.create = (newList, result) => {
   });
 };
 
+List.getdefault = (theday, result) => {
+  //var theday = "2020-04-28 00:00:00";
+  sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    console.log("tasks: ", res);
+    result(null, res);
+  });
+};
+
+List.getOngoingTask = (theday, result) => {
+  //var theday = "2020-04-28 00:00:00";
+  sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_status = 1 AND t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    console.log("tasks: ", res);
+    result(null, res);
+  });
+};
+
+List.gettoStart = (theday, result) => {
+  //var theday = "2020-04-28 00:00:00";
+  sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_status = 2 AND t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    console.log("tasks: ", res);
+    result(null, res);
+  });
+};
+
+List.getDone = (theday, result) => {
+  //var theday = "2020-04-28 00:00:00";
+  sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_status = 2 AND t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    console.log("tasks: ", res);
+    result(null, res);
+  });
+};
+
+List.getOverdue = (theday, result) => {
+  //var theday = "2020-04-28 00:00:00";
+  sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_status = 2 AND t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    console.log("tasks: ", res);
+    result(null, res);
+  });
+};
+
 List.getAll = result => {
     sql.query("SELECT * FROM CATEGORY", (err, res) => {
       if (err) {

@@ -1,5 +1,66 @@
 const List = require("../models/list.model.js");
 
+
+// Retrieve all tasks from the database.
+exports.findDefault = (req, res) => {
+  List.getdefault("2020-04-28 00:00:00",(err, data) => {
+      if (err) {
+          const message = err.message || "Some error occurred while retrieving customers.";
+          res.status(500).json({ message });
+      } else {
+          res.json(data);
+      }
+  });
+};
+
+// Retrieve ongoing tasks from the database.
+exports.findOngoingTask = (req, res) => {
+  List.getOngoingTask("2020-04-28 00:00:00",(err, data) => {
+      if (err) {
+          const message = err.message || "Some error occurred while retrieving customers.";
+          res.status(500).json({ message });
+      } else {
+          res.json(data);
+      }
+  });
+};
+
+// Retrieve tostart tasks from the database.
+exports.findtoStart = (req, res) => {
+  List.gettoStart("2020-04-28 00:00:00",(err, data) => {
+      if (err) {
+          const message = err.message || "Some error occurred while retrieving customers.";
+          res.status(500).json({ message });
+      } else {
+          res.json(data);
+      }
+  });
+};
+
+// Retrieve done tasks from the database.
+exports.findDone = (req, res) => {
+  List.getDone("2020-04-28 00:00:00",(err, data) => {
+      if (err) {
+          const message = err.message || "Some error occurred while retrieving customers.";
+          res.status(500).json({ message });
+      } else {
+          res.json(data);
+      }
+  });
+};
+
+// Retrieve overdue tasks from the database.
+exports.findOverdue = (req, res) => {
+  List.getOverdue("2020-04-28 00:00:00",(err, data) => {
+      if (err) {
+          const message = err.message || "Some error occurred while retrieving customers.";
+          res.status(500).json({ message });
+      } else {
+          res.json(data);
+      }
+  });
+};
+
 // Create and Save a new list
 exports.create = (req, res) => {
     // Validate request
