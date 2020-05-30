@@ -4,6 +4,7 @@ var format = require('date-fns/format');
 
 // constructor
 const Task = function (task) {
+  this.t_id= task.t_id;
   this.t_name = task.t_name;
   this.t_priority = task.t_priority;
   this.t_status = task.t_status;
@@ -85,7 +86,7 @@ Task.getAll = result => {
             }
   
             valueListTsk = [newTask.t_name, newTask.t_priority, newTask.t_status, newTask.t_description, sDate, dDate, newId, newTask.t_group, newTask.t_category, 1];
-  
+
             //console.log(valueListTsk);
             //run query to insert values into task table
             sql.query(sqlTsk, [valueListTsk], function (err, res) {
@@ -132,7 +133,7 @@ Task.getAll = result => {
   
   Task.updateById = (id, task, result) => {
     sql.query(
-      "UPDATE Task SET t_name = ?, t_user = ?, t_priority = ?, t_status = ?, t_description = ?, t_start_date =?,  t_due_date = ?, t_group=?, t_category=?, WHERE id = ? AND t_active = 1",
+      "UPDATE task SET t_name = ?, t_priority = ?, t_status = ?, t_description = ?, t_start_date = ?,  t_due_date = ?, t_group= ?, t_category= ? WHERE t_id = ? AND t_active = 1",
       [task.t_name, task.t_priority, task.t_status, task.t_description,task.t_start_date,task.t_due_date,task.t_group,task.t_category,task.t_id],
       (err, res) => {
         if (err) {
@@ -142,7 +143,7 @@ Task.getAll = result => {
         }
   
         if (res.affectedRows == 0) {
-          // not found Customer with the id
+          // not found task with the id
           result({ kind: "not_found" }, null);
           return;
         }
@@ -154,7 +155,7 @@ Task.getAll = result => {
   };
  
   Task.remove = (id, result) => {
-    sql.query("UPDATE Task SET t_active=0, WHERE id = ?", id, (err, res) => {
+    sql.query("UPDATE Task SET t_active=0 WHERE t_id = ?", id, (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(null, err);
