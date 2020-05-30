@@ -1,6 +1,7 @@
 const sql = require("./db.js");
 
 const List = function(list){
+    this.c_id = list.c_id;
     this.c_name = list.c_name;
 }
 
@@ -16,9 +17,9 @@ List.create = (newList, result) => {
     result(null, { id: res.insertId, ...newList });
   });
 };
-
+//give a single date object to find the list of tasks that are on same date.
 List.getdefault = (theday, result) => {
-  //var theday = "2020-04-28 00:00:00";
+  
   sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
     if (err) {
       console.log("error: ", err);

@@ -1,16 +1,16 @@
 module.exports = app => {
     const tags = require("../controller/tag.controller.js");
   
-    // Create a new task
-    app.post("/tags", tags.create);
+    // Create a new tag
+    app.post("/CreateTag", tags.create);
   
-    // Retrieve all tasks
+    // Retrieve all tags
     app.get("/tags", tags.findAll);
   
-    // Retrieve a single task with taskId
+    // Retrieve a single tag with taskId
     app.get("/tags/:tagId", tags.findOne);
   
-    // Update a Customer with taskId
+    // Update a tag with taskId
     app.put("/tags/:tagId", tags.update);
   
   };

@@ -3,21 +3,21 @@ module.exports = app => {
   const lists = require("../controller/list.controller.js");
 
   // Create a new list
-  app.post("/lists", lists.create);
+  app.post("/createList", lists.create);
 
-  // Retrieve all Customers
+  // Retrieve all tasks
   app.get("/tasksall", lists.findDefault);
 
-  // Retrieve all Customers
+  // Retrieve all tasks
   app.get("/tasksongoing", lists.findOngoingTask);
 
-  // Retrieve all Customers
+  // Retrieve all tasks to start 
   app.get("/taskstostart", lists.findtoStart);
 
-  // Retrieve all Customers
+  // Retrieve all tasks done
   app.get("/tasksdone", lists.findDone);
 
-  // Retrieve all Customers
+  // Retrieve all tasks over due
   app.get("/tasksoverdue", lists.findOverdue);
 
   // Retrieve all list

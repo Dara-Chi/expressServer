@@ -1,6 +1,7 @@
 const sql = require("./db.js");
 
 const Tag = function(tag){
+    this.g_id = tag.g_id;
     this.g_name = tag.g_name;
 }
 

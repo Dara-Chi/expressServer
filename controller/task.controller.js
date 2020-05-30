@@ -12,17 +12,18 @@ exports.create = (req, res) => {
   // Create a Task
   const task = new Task({
 
-    name: req.body.name,
-    priority: req.body.priority,
-    status: req.body.status,
-    description: req.body.description,
-    startDate: req.body.startDate,
-    dueDate: req.body.dueDate,
-    group: req.body.group,
-    category: req.body.category,
-    recurring: req.body.recurring,
-    frequency: req.body.frequency,
-    times: req.body.times
+    t_name: req.body.t_name,
+    t_priority: req.body.t_priority,
+    t_status: req.body.t_status,
+    t_description: req.body.t_description,
+    t_start_date: req.body.t_start_date,
+    t_due_date: req.body.t_due_date,
+    t_group: req.body.t_group,
+    t_category: req.body.t_category,
+    tc_recurring:req.body.tc_recurring,
+    t_rec_id: req.body.t_rec_id,
+    tc_frequency: req.body.tc_frequency,
+    tc_times: req.body.tc_times
   });
 
   // Save Task in the database

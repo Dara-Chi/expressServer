@@ -2,7 +2,7 @@ module.exports = app => {
     const tasks = require("../controller/task.controller.js");
   
     // Create a new task
-    app.post("/tasks", tasks.create);
+    app.post("/CreateTask", tasks.create);
   
     // Retrieve all tasks
     app.get("/tasks", tasks.findAll);

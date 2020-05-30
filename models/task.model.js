@@ -1,23 +1,24 @@
-
 const sql = require("./db.js");
+var add = require('date-fns/add');
+var format = require('date-fns/format');
 
 // constructor
 const Task = function (task) {
-  this.id = task.id;
-  this.name = task.name;
-  this.priority = task.priority;
-  this.status = task.status;
-  this.description = task.description;
-  this.startDate = task.startDate;
-  this.dueDate = task.dueDate;
-  this.recId = task.recId;
-  this.group = task.group;
-  this.category = task.category;
-  this.recurring = task.recurring;
-  this.frequency = task.frequency;
-  this.times = task.times;
+  this.t_name = task.t_name;
+  this.t_priority = task.t_priority;
+  this.t_status = task.t_status;
+  this.t_description = task.t_description;
+  this.t_start_date = task.t_start_date;
+  this.t_due_date = task.t_due_date;
+  this.t_rec_id = global.newId;
+  this.t_group = task.t_group;
+  this.t_category = task.t_category;
+  this.tc_recurring = task.tc_recurring;
+  this.tc_frequency = task.tc_frequency;
+  this.tc_times = task.tc_times;
 };
-
+///should have separate model for task creation  
+//
 
 Task.getAll = result => {
     sql.query("SELECT * FROM Task", (err, res) => {
@@ -52,9 +53,10 @@ Task.getAll = result => {
   };
 
   Task.create = (newTask, result) => {
-    if (newTask.recurring) {
+    console.log(newTask);
+    if (newTask.tc_recurring) {
   
-      var valueListCrt = [newTask.recurring, newTask.frequency, newTask.times, newTask.startDate];
+      var valueListCrt = [newTask.tc_recurring, newTask.tc_frequency, newTask.tc_times, newTask.t_start_date];
       var sqlCrt = "INSERT INTO task_creation (tc_recurring, tc_frequency, tc_times, tc_start_date) VALUES (?)";
   
       //console.log(valueListCrt);
@@ -65,25 +67,24 @@ Task.getAll = result => {
           result(err, null);
           return;
         } else {
-          global.newId = res.insertId;
+          console.log('res:', res);
+          const newId = res.insertId;
   
-          //console.log("Result: " + result);
+          console.log("rec id: " + newId);
   
-          for (var i = 0; i < newTask.times; i++) {
-            var sDate = new Date(newTask.startDate);
-            var dDate = new Date(newTask.dueDate);
+          for (var i = 0; i < newTask.tc_times; i++) {
+            var sDate = new Date(newTask.t_start_date);
+            var dDate = new Date(newTask.t_due_date);
             var recDates = [];
-            var sqlTsk = "INSERT INTO task (t_name, t_user, t_priority, t_status, t_description, t_start_date, t_due_date, t_rec_id, t_group, t_caregory, t_active) VALUES (?)";
+            var sqlTsk = "INSERT INTO task (t_name, t_priority, t_status, t_description, t_start_date, t_due_date, t_rec_id, t_group, t_category, t_active) VALUES (?)";
   
             if (i > 0) {
-  
-              recDates = getRecDate(newTask.frequency, sDate, dDate, i);
+              recDates = getRecDate(newTask.tc_frequency, sDate, dDate, i);
               sDate = recDates[0];
               dDate = recDates[1];
-  
             }
   
-            valueListTsk = [newTask.name, 1, newTask.priority, newTask.status, newTask.description, sDate, dDate, global.newId, newTask.group, newTask.category, 1];
+            valueListTsk = [newTask.t_name, newTask.t_priority, newTask.t_status, newTask.t_description, sDate, dDate, newId, newTask.t_group, newTask.t_category, 1];
   
             //console.log(valueListTsk);
             //run query to insert values into task table
@@ -101,17 +102,15 @@ Task.getAll = result => {
   
             });
           }
-  
           result(null, "Task added!");
-  
         }
   
       });
     }
     else {
-      valueListTsk = [newTask.name, 1, newTask.priority, newTask.status, newTask.description, newTask.startDate, newTask.dueDate, null, newTask.group, newTask.category, 1];
+      valueListTsk = [newTask.t_name, newTask.t_priority, newTask.t_status, newTask.t_description, newTask.t_start_date, newTask.t_due_date, global.newId, newTask.t_group, newTask.t_category, 1];
   
-      var sqlTsk = "INSERT INTO task (t_name, t_user, t_priority, t_status, t_description, t_start_date, t_due_date, t_rec_id, t_group, t_caregory, t_active) VALUES (?)";
+      var sqlTsk = "INSERT INTO task (t_name, t_priority, t_status, t_description, t_start_date, t_due_date, t_rec_id, t_group, t_category, t_active) VALUES (?)";
       //console.log(valueListTsk);
       //run query to insert values into task table
       sql.query(sqlTsk, [valueListTsk], function (err, res) {
@@ -133,8 +132,8 @@ Task.getAll = result => {
   
   Task.updateById = (id, task, result) => {
     sql.query(
-      "UPDATE Task SET t_name = ?, t_user = ?, t_priority = ?, t_status = ?, t_description = ?, t_start_date =?,  t_due_date = ?, t_group=?, t_caregory=?, WHERE id = ? AND t_active = 1",
-      [task.t_name, task.t_user, task.t_priority, task.t-status, task.t_description,task.t_start_date,task.t_due_date,task.t_group,task.t_caregory,task.t_id],
+      "UPDATE Task SET t_name = ?, t_user = ?, t_priority = ?, t_status = ?, t_description = ?, t_start_date =?,  t_due_date = ?, t_group=?, t_category=?, WHERE id = ? AND t_active = 1",
+      [task.t_name, task.t_priority, task.t_status, task.t_description,task.t_start_date,task.t_due_date,task.t_group,task.t_category,task.t_id],
       (err, res) => {
         if (err) {
           console.log("error: ", err);
@@ -226,4 +225,3 @@ function getRecDate(freq, sdate, ddate, no) {
 }
 
 module.exports = Task;
-  module.exports = Task;

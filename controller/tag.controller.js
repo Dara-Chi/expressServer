@@ -11,7 +11,6 @@ exports.create = (req, res) => {
 
   // Create a Tag
   const tag = new Tag({
-
     g_name: req.body.g_name,
   });
 
