@@ -71,4 +71,25 @@ Tag.getAll = result => {
     });
   };
 
+  Tag.updateById = (id, tag, result) => {
+    sql.query(
+      "UPDATE Groupe SET g_name = ? WHERE g_id = ?",
+      [tag.g_name,tag.g_id],
+      (err, res) => {
+        if (err) {
+          console.log("error: ", err);
+          result(null, err);
+          return;
+        }
+  
+        if (res.affectedRows == 0) {
+          // not found tag with the id
+          result({ kind: "not_found" }, null);
+          return;
+        }
+        console.log("updated list: ", { ...tag });
+        result(null, { ...tag });
+      }
+    );
+  };
   module.exports = Tag; 

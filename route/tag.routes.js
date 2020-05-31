@@ -11,6 +11,6 @@ module.exports = app => {
     app.get("/tags/:tagId", tags.findOne);
   
     // Update a tag with taskId
-    app.put("/tags/:tagId", tags.update);
+    app.put("/UpdateTag/:tagId", tags.update);
   
   };

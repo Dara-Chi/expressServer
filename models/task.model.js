@@ -22,7 +22,7 @@ const Task = function (task) {
 //
 
 Task.getAll = result => {
-    sql.query("SELECT * FROM Task", (err, res) => {
+    sql.query("SELECT * FROM Task WHERE t_active =1 ORDER BY task.t_priority", (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(null, err);
@@ -147,7 +147,6 @@ Task.getAll = result => {
           result({ kind: "not_found" }, null);
           return;
         }
-  
         console.log("updated TASK: ", { id: id, ...task });
         result(null, { id: id, ...task });
       }
@@ -167,9 +166,9 @@ Task.getAll = result => {
         result({ kind: "not_found" }, null);
         return;
       }
-  
-      console.log("DELETED TASK: ", { id: id, ...task });
-      result(null, { id: id, ...task });
+      console.log("DELETED TASK: ", {id:id});
+      
+      
     });
   };
   

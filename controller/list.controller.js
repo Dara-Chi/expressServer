@@ -13,53 +13,53 @@ exports.findDefault = (req, res) => {
   });
 };
 
-// Retrieve ongoing tasks from the database.
-exports.findOngoingTask = (req, res) => {
-  List.getOngoingTask("2020-04-28 00:00:00",(err, data) => {
-      if (err) {
-          const message = err.message || "Some error occurred while retrieving customers.";
-          res.status(500).json({ message });
-      } else {
-          res.json(data);
-      }
-  });
-};
+// // Retrieve ongoing tasks from the database.
+// exports.findOngoingTask = (req, res) => {
+//   List.getOngoingTask("2020-04-28 00:00:00",(err, data) => {
+//       if (err) {
+//           const message = err.message || "Some error occurred while retrieving customers.";
+//           res.status(500).json({ message });
+//       } else {
+//           res.json(data);
+//       }
+//   });
+// };
 
-// Retrieve tostart tasks from the database.
-exports.findtoStart = (req, res) => {
-  List.gettoStart("2020-04-28 00:00:00",(err, data) => {
-      if (err) {
-          const message = err.message || "Some error occurred while retrieving customers.";
-          res.status(500).json({ message });
-      } else {
-          res.json(data);
-      }
-  });
-};
+// // Retrieve tostart tasks from the database.
+// exports.findtoStart = (req, res) => {
+//   List.gettoStart("2020-04-28 00:00:00",(err, data) => {
+//       if (err) {
+//           const message = err.message || "Some error occurred while retrieving customers.";
+//           res.status(500).json({ message });
+//       } else {
+//           res.json(data);
+//       }
+//   });
+// };
 
-// Retrieve done tasks from the database.
-exports.findDone = (req, res) => {
-  List.getDone("2020-04-28 00:00:00",(err, data) => {
-      if (err) {
-          const message = err.message || "Some error occurred while retrieving customers.";
-          res.status(500).json({ message });
-      } else {
-          res.json(data);
-      }
-  });
-};
+// // Retrieve done tasks from the database.
+// exports.findDone = (req, res) => {
+//   List.getDone("2020-04-28 00:00:00",(err, data) => {
+//       if (err) {
+//           const message = err.message || "Some error occurred while retrieving customers.";
+//           res.status(500).json({ message });
+//       } else {
+//           res.json(data);
+//       }
+//   });
+// };
 
-// Retrieve overdue tasks from the database.
-exports.findOverdue = (req, res) => {
-  List.getOverdue("2020-04-28 00:00:00",(err, data) => {
-      if (err) {
-          const message = err.message || "Some error occurred while retrieving customers.";
-          res.status(500).json({ message });
-      } else {
-          res.json(data);
-      }
-  });
-};
+// // Retrieve overdue tasks from the database.
+// exports.findOverdue = (req, res) => {
+//   List.getOverdue("2020-04-28 00:00:00",(err, data) => {
+//       if (err) {
+//           const message = err.message || "Some error occurred while retrieving customers.";
+//           res.status(500).json({ message });
+//       } else {
+//           res.json(data);
+//       }
+//   });
+// };
 
 // Create and Save a new list
 exports.create = (req, res) => {
@@ -107,11 +107,11 @@ exports.findOne = (req, res) => {
         if (err) {
           if (err.kind === "not_found") {
             res.status(404).send({
-              message: `Not found Customer with id ${req.params.c_Id}.`
+              message: `Not found list with id ${req.params.c_Id}.`
             });
           } else {
             res.status(500).send({
-              message: "Error retrieving Customer with id " + req.params.c_Id
+              message: "Error retrieving list with id " + req.params.c_Id
             });
           }
         } else res.json(data);
@@ -127,9 +127,9 @@ exports.update = (req, res) => {
     });
   }
 
-  Task.updateById(
+  List.updateById(
     req.params.c_id,
-    new Task(req.body),
+    new List(req.body),
     (err, data) => {
       if (err) {
         if (err.kind === "not_found") {

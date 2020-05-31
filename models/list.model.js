@@ -32,61 +32,61 @@ List.getdefault = (theday, result) => {
   });
 };
 
-List.getOngoingTask = (theday, result) => {
-  //var theday = "2020-04-28 00:00:00";
-  sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_status = 1 AND t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
-    }
+// List.getOngoingTask = (theday, result) => {
+//   //var theday = "2020-04-28 00:00:00";
+//   sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_status = 1 AND t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
+//     if (err) {
+//       console.log("error: ", err);
+//       result(null, err);
+//       return;
+//     }
 
-    console.log("tasks: ", res);
-    result(null, res);
-  });
-};
+//     console.log("tasks: ", res);
+//     result(null, res);
+//   });
+// };
 
-List.gettoStart = (theday, result) => {
-  //var theday = "2020-04-28 00:00:00";
-  sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_status = 2 AND t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
-    }
+// List.gettoStart = (theday, result) => {
+//   //var theday = "2020-04-28 00:00:00";
+//   sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_status = 2 AND t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
+//     if (err) {
+//       console.log("error: ", err);
+//       result(null, err);
+//       return;
+//     }
 
-    console.log("tasks: ", res);
-    result(null, res);
-  });
-};
+//     console.log("tasks: ", res);
+//     result(null, res);
+//   });
+// };
 
-List.getDone = (theday, result) => {
-  //var theday = "2020-04-28 00:00:00";
-  sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_status = 2 AND t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
-    }
+// List.getDone = (theday, result) => {
+//   //var theday = "2020-04-28 00:00:00";
+//   sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_status = 2 AND t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
+//     if (err) {
+//       console.log("error: ", err);
+//       result(null, err);
+//       return;
+//     }
 
-    console.log("tasks: ", res);
-    result(null, res);
-  });
-};
+//     console.log("tasks: ", res);
+//     result(null, res);
+//   });
+// };
 
-List.getOverdue = (theday, result) => {
-  //var theday = "2020-04-28 00:00:00";
-  sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_status = 2 AND t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
-    }
+// List.getOverdue = (theday, result) => {
+//   //var theday = "2020-04-28 00:00:00";
+//   sql.query('select task.t_name,task.t_due_date,priority.p_priority from task INNER JOIN priority ON task.t_priority = priority.p_id where t_status = 2 AND t_due_date = ? ORDER BY task.t_priority',[theday], (err, res) => {
+//     if (err) {
+//       console.log("error: ", err);
+//       result(null, err);
+//       return;
+//     }
 
-    console.log("tasks: ", res);
-    result(null, res);
-  });
-};
+//     console.log("tasks: ", res);
+//     result(null, res);
+//   });
+// };
 
 List.getAll = result => {
     sql.query("SELECT * FROM CATEGORY", (err, res) => {
@@ -101,7 +101,29 @@ List.getAll = result => {
     });
   };
   
-  List.findById = (t_id, result) => {
+  List.updateById = (id, list, result) => {
+    sql.query(
+      "UPDATE category SET c_name = ? WHERE c_id = ?",
+      [list.c_name,list.c_id],
+      (err, res) => {
+        if (err) {
+          console.log("error: ", err);
+          result(null, err);
+          return;
+        }
+  
+        if (res.affectedRows == 0) {
+          // not found list with the id
+          result({ kind: "not_found" }, null);
+          return;
+        }
+        console.log("updated list: ", { ...list });
+        result(null, { ...list });
+      }
+    );
+  };
+
+  List.findById = (c_id, result) => {
     sql.query(`SELECT * FROM CATEGORY WHERE c_id = ${c_id}`, (err, res) => {
       if (err) {
         console.log("error: ", err);
@@ -110,7 +132,7 @@ List.getAll = result => {
       }
       // if result row is not 0;
       if (res.length) {
-        console.log("found task: ", res[0]);
+        console.log("found list: ", res[0]);
         result(null, res[0]);
         return;
       }

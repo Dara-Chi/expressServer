@@ -67,7 +67,7 @@ exports.update = (req, res) => {
 
   Tag.updateById(
     req.params.g_id,
-    new Task(req.body),
+    new Tag(req.body),
     (err, data) => {
       if (err) {
         if (err.kind === "not_found") {

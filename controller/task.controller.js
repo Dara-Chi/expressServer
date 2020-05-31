@@ -97,3 +97,32 @@ exports.update = (req, res) => {
   
 };
 
+
+exports.remove = (req, res) => {
+  // Validate Request
+if (!req.body) {
+  res.status(400).send({
+    message: "Content can not be empty!"
+  });
+}
+
+Task.remove(
+  req.params.t_id,
+  new Task(req.body),
+  (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found task with id ${req.params.t_id}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error deleting task with id " + req.params.t_id
+        });
+      }
+    } else res.json(data);
+  }
+);
+
+};
+
