@@ -1,8 +1,7 @@
 module.exports = app => {
     const tasks = require("../controller/task.controller.js");
   
-    // Create a new task
-    app.post("/CreateTask", tasks.create);
+    app.post('/CreateTask', tasks.create);
   
     // Retrieve all tasks
     app.get("/tasks", tasks.findAll);
@@ -14,4 +13,6 @@ module.exports = app => {
     app.put("/tasks/:t_id", tasks.update);
     // update a task to be inactive
     app.put("/deleteTasks/:t_id", tasks.remove);
+
+    
   };
