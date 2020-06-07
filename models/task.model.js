@@ -81,6 +81,7 @@ Task.create = (newTask, taskCreation, result) => {
 
       if (newTasks.length === parseInt(taskCreation.tc_times)) {
         result(null, newTasks);
+        
       }
 
     });
@@ -176,7 +177,7 @@ function getRecDate(freq, sdate, ddate, no) {
 Task.updateById = (id, task, result) => {
   sql.query(
     "UPDATE task SET t_name = ?, t_priority = ?, t_status = ?, t_description = ?, t_start_date = ?,  t_due_date = ?, t_group= ?, t_category= ? WHERE t_id = ? AND t_active = 1",
-    [task.t_name, task.t_priority, task.t_status, task.t_description,task.t_start_date,task.t_due_date,task.t_group,task.t_category,task.t_id],
+    [task.t_name, task.t_priority, task.t_status, task.t_description,task.t_start_date,task.t_due_date,task.t_group,task.t_category,id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);
@@ -188,8 +189,8 @@ Task.updateById = (id, task, result) => {
         result({ kind: "not_found" }, null);
         return;
       }
-      console.log("updated TASK: ", { id: id, ...task });
-      result(null, { id: id, ...task });
+      console.log("updated TASK: ", { t_id: id, ...task });
+      result(null, { t_id: id, ...task });
     }
   );
 };

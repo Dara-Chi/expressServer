@@ -1,7 +1,6 @@
 const sql = require("./db.js");
 
 const Tag = function(tag){
-    this.g_id = tag.g_id;
     this.g_name = tag.g_name;
 }
 
@@ -53,7 +52,7 @@ Tag.getAll = result => {
   };
 
   Tag.remove = (id, result) => {
-    sql.query("DELETE FROM GROUPE WHERE id = ?", id, (err, res) => {
+    sql.query("DELETE FROM GROUPE WHERE g_id = ?", id, (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(null, err);
@@ -92,4 +91,6 @@ Tag.getAll = result => {
       }
     );
   };
+
+
   module.exports = Tag; 

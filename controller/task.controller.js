@@ -1,7 +1,7 @@
 const Task = require("../models/task.model.js");
 const TaskCreation = require("../models/taskcreation.model.js");
 
-//
+//set create task controller a set of functions in sequence
 exports.create = [validateTaskCreationEntry, createTaskCreationEntry, createTaskEntries];
 
 // validate request
@@ -54,6 +54,7 @@ function createTaskEntries (req, res, next) {
     }
     console.log('task data:', data);
     res.json(data);
+   
   });
 }
 

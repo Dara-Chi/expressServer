@@ -13,54 +13,6 @@ exports.findDefault = (req, res) => {
   });
 };
 
-// // Retrieve ongoing tasks from the database.
-// exports.findOngoingTask = (req, res) => {
-//   List.getOngoingTask("2020-04-28 00:00:00",(err, data) => {
-//       if (err) {
-//           const message = err.message || "Some error occurred while retrieving customers.";
-//           res.status(500).json({ message });
-//       } else {
-//           res.json(data);
-//       }
-//   });
-// };
-
-// // Retrieve tostart tasks from the database.
-// exports.findtoStart = (req, res) => {
-//   List.gettoStart("2020-04-28 00:00:00",(err, data) => {
-//       if (err) {
-//           const message = err.message || "Some error occurred while retrieving customers.";
-//           res.status(500).json({ message });
-//       } else {
-//           res.json(data);
-//       }
-//   });
-// };
-
-// // Retrieve done tasks from the database.
-// exports.findDone = (req, res) => {
-//   List.getDone("2020-04-28 00:00:00",(err, data) => {
-//       if (err) {
-//           const message = err.message || "Some error occurred while retrieving customers.";
-//           res.status(500).json({ message });
-//       } else {
-//           res.json(data);
-//       }
-//   });
-// };
-
-// // Retrieve overdue tasks from the database.
-// exports.findOverdue = (req, res) => {
-//   List.getOverdue("2020-04-28 00:00:00",(err, data) => {
-//       if (err) {
-//           const message = err.message || "Some error occurred while retrieving customers.";
-//           res.status(500).json({ message });
-//       } else {
-//           res.json(data);
-//       }
-//   });
-// };
-
 // Create and Save a new list
 exports.create = (req, res) => {
     // Validate request
@@ -70,9 +22,8 @@ exports.create = (req, res) => {
     });
   }
 
-  // Create a Tag
+  //Create a list 
   const list = new List({
-
     c_name: req.body.c_name,
   });
 
@@ -134,11 +85,11 @@ exports.update = (req, res) => {
       if (err) {
         if (err.kind === "not_found") {
           res.status(404).send({
-            message: `Not found group/tag with id ${req.params.c_Id}.`
+            message: `Not found group/tag with id ${req.params.c_id}.`
           });
         } else {
           res.status(500).send({
-            message: "Error updating group/tag with id " + req.params.c_Id
+            message: "Error updating group/tag with id " + req.params.c_id
           });
         }
       } else res.json(data);
@@ -146,4 +97,33 @@ exports.update = (req, res) => {
   );
   
 };
+
+exports.remove = (req, res) => {
+  // Validate Request
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+  }
+
+  List.removeById(
+    req.params.c_id,
+    (err, data) => {
+      if (err) {
+        if (err.kind === "not_found") {
+          res.status(404).send({
+            message: `Not found list item with id ${req.params.c_id}.`
+          });
+        } else {
+          res.status(500).send({
+            message: "Error deleting list item with id " + req.params.c_id
+          });
+        }
+      } else res.json(data);
+    }
+  );
+
+};
+
+
 
