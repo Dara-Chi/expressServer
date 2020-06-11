@@ -14,8 +14,13 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "date-fns": "^2.14.0",
+    "dateformat": "^3.0.3",
     "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "moment": "^2.26.0",
     "mysql2": "^2.1.0",
+    "node-cron": "^2.0.3",
+    "nodemailer": "^6.4.8",
     "sequelize": "^5.21.9"
   }
 }

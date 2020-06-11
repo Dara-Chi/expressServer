@@ -1,6 +1,6 @@
 const sql = require("./db.js");
-var add = require('date-fns/add');
-var format = require('date-fns/format');
+const moment = require("moment");
+var addDays = require('date-fns/addDays');
 
 // constructor
 const Task = function (task) {
@@ -16,7 +16,12 @@ const Task = function (task) {
 ///should have separate model for task creation  
 
 Task.getAll = result => {
-    sql.query("SELECT * FROM Task WHERE t_active =1 ORDER BY task.t_priority", (err, res) => {
+    var today = new Date();
+    var fifthDate = moment(addDays(new Date(today), 4)).format('YYYY-MM-DD');
+    today = moment(today).format('YYYY-MM-DD');
+    console.log(today);
+    console.log(fifthDate);
+    sql.query("SELECT * FROM Task WHERE t_active =1 ORDER BY task.t_priority", [today, fifthDate], (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(null, err);
@@ -27,9 +32,10 @@ Task.getAll = result => {
       result(null, res);
     });
 };
-  
-Task.findById = (t_id, result) => {
-  sql.query(`SELECT * FROM Task WHERE t_id = ${t_id}`, (err, res) => {
+
+Task.GetTasksByDueDate = result => {
+  var today = moment(new Date().toLocaleDateString()).format('YYYY-MM-DD');
+  sql.query("SELECT * FROM Task WHERE t_active =1 AND t_due_date = ?", today, (err, res)=>{
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -37,12 +43,30 @@ Task.findById = (t_id, result) => {
     }
     // if result row is not 0;
     if (res.length) {
-      console.log("found task: ", res[0]);
-      result(null, res[0]);
+      console.log("found task: ", res);
+      result(null, res);
       return;
     }
+    console.log('reminder sent...');
+    result(null,res);
+  })
+}
 
-    // not found Task with the id
+Task.searchByName = (t_name, result) => {
+  var searchReg = "%"+t_name+"%";
+  sql.query(`SELECT * FROM Task WHERE t_name LIKE ? AND t_active = 1`,searchReg, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+    // if result row is not 0;
+    if (res.length) {
+      console.log("found task: ", res);
+      result(null, res);
+      return;
+    }
+    // not found Task with the name
     result({ kind: "not_found" }, null);
   });
 };
@@ -51,19 +75,17 @@ Task.create = (newTask, taskCreation, result) => {
 
   const times = taskCreation.tc_recurring ? taskCreation.tc_times : 1;
   const newTasks = [];
-
+  const sDate = new Date(newTask.t_start_date);
+  const dDate = new Date(newTask.t_due_date);
+  console.log({ sDate, dDate });
   for (var i = 0; i < times; i++) {
-    var sDate = new Date(newTask.t_start_date);
-    var dDate = new Date(newTask.t_due_date);
-    var recDates = [];
-    var sqlTsk = "INSERT INTO task (t_name, t_priority, t_status, t_description, t_start_date, t_due_date, t_rec_id, t_group, t_category, t_active) VALUES (?)";
 
-    if (i > 0) {
-      recDates = getRecDate(newTask.tc_frequency, sDate, dDate, i);
-      sDate = recDates[0];
-      dDate = recDates[1];
-    }
-    valueListTsk = [newTask.t_name, newTask.t_priority, newTask.t_status, newTask.t_description, sDate, dDate, taskCreation.tc_id, newTask.t_group, newTask.t_category, 1];
+    var sqlTsk = "INSERT INTO task (t_name, t_priority, t_status, t_description, t_start_date, t_due_date, t_rec_id, t_group, t_category, t_active) VALUES (?)";
+    var recDates = getRecDate(taskCreation.tc_frequency, sDate, dDate, i);
+    console.log('>>>', i, recDates);
+    const sDateI = recDates[0];
+    const dDateI = recDates[1];
+    valueListTsk = [newTask.t_name, newTask.t_priority, newTask.t_status, newTask.t_description, sDateI, dDateI, taskCreation.tc_id, newTask.t_group, newTask.t_category, 1];
     console.log('>>', valueListTsk);
     //run query to insert values into task table
     sql.query(sqlTsk, [valueListTsk], function (err, res) {
@@ -72,26 +94,16 @@ Task.create = (newTask, taskCreation, result) => {
         result(err);
         return;
       }
-      
       message = "New task has been added!";
-      
-      //Note: send message to front-end during integration
       console.log(message);
       newTasks.push({ ...newTask, t_id: res.insertId, t_rec_id: taskCreation.tc_id });
 
       if (newTasks.length === parseInt(taskCreation.tc_times)) {
         result(null, newTasks);
-        
       }
-
     });
   }
-  // result(null, "Task added!");
-  // }
-  // });
 };
-  
-
 /**
 * 
 * @param {String} freq 
@@ -135,6 +147,8 @@ function getRecDate(freq, sdate, ddate, no) {
         weeks: (no * 2),
       });
       break;
+    default:
+      throw new Error('unknown interval: ' + freq);
   }
 
   dateArr[0] = sdate;
@@ -142,38 +156,7 @@ function getRecDate(freq, sdate, ddate, no) {
 
   return dateArr;
 }
-// // ---
 
-// mysql.query(args, callback);
-// function callback (err, data) {
-//   // ...
-// }
-
-// mysql.query(args)
-//   .then(function () { ... })
-//   .catch(function (err) { ... })
-
-// Promise.all([a(), b(), c()]).then(function([a, b, c]) { }).catch()
-// Promise.race([a(), b()]).then(function(...) {})
-
-// async function xxx () {
-//   const taskc = await mysql.query(args);
-//   const tasks = [{}, {}, {}];
-//   const newTasks = await Promise.all(tasks.map(async task => {
-//     const { insertId } = await mysql.query(create task);
-//     return mysql.query(select task insertId);
-//   }));
-
-//   for (let i = 0; i < count; i++) {
-//     const task = await mysql.query(new task args);
-//   }
-//   return data;
-// }
-// const x = function xxx();
-
-// // ---
-
-  
 Task.updateById = (id, task, result) => {
   sql.query(
     "UPDATE task SET t_name = ?, t_priority = ?, t_status = ?, t_description = ?, t_start_date = ?,  t_due_date = ?, t_group= ?, t_category= ? WHERE t_id = ? AND t_active = 1",
@@ -194,6 +177,24 @@ Task.updateById = (id, task, result) => {
     }
   );
 };
+//update task status by 1 am daily
+Task.updateStatus = result=>{
+  var today = moment(new Date().toLocaleDateString().substr(0,10)).format('YYYY-MM-DD'); 
+  sql.query("UPDATE task SET t_status = 4 WHERE t_due_date < ?", today, (err, res)=>{
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+    if (res.affectedRows == 0) {
+      // not found task with the id
+      result({ kind: "not_found" }, null);
+      return;
+    }
+    console.log('task status upadted....');
+    
+  });
+}
 
 Task.remove = (id, result) => {
   sql.query("UPDATE Task SET t_active=0 WHERE t_id = ?", id, (err, res) => {
@@ -213,5 +214,26 @@ Task.remove = (id, result) => {
 };
 
 
+Task.findByList = (t_category, result) => {
+  console.log('List:',t_category);
+  sql.query("SELECT * FROM task WHERE t_category = ? ORDER BY t_priority", t_category, (err, res) => {
+    if(err){
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+    if (res.length == 0) {
+      // not found task with the id
+      console.log('res: ', res);
+
+
+      result({ kind: "not_found" }, null);
+      return;
+    }
+    console.log("found tasks matched the list: ", res);
+      result(null, res);
+      return;
+  });
+}
 
 module.exports = Task;
