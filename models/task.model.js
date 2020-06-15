@@ -1,5 +1,6 @@
 const sql = require("./db.js");
 const moment = require("moment");
+var add = require('date-fns/add');
 var addDays = require('date-fns/addDays');
 
 // constructor
@@ -19,9 +20,8 @@ Task.getAll = result => {
     var today = new Date();
     var fifthDate = moment(addDays(new Date(today), 4)).format('YYYY-MM-DD');
     today = moment(today).format('YYYY-MM-DD');
-    console.log(today);
-    console.log(fifthDate);
-    sql.query("SELECT * FROM Task WHERE t_active =1 ORDER BY task.t_priority", [today, fifthDate], (err, res) => {
+   
+    sql.query("SELECT * FROM Task WHERE t_active =1 AND t_due_date >= ? AND t_due_date <= ? ORDER BY task.t_priority", [today, fifthDate], (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(null, err);
@@ -33,9 +33,22 @@ Task.getAll = result => {
     });
 };
 
+Task.getOverdue = result => {
+  sql.query("SELECT * FROM Task WHERE t_status = 4 AND t_active = 1 ORDER BY t_priority", (err, res)=>{
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+    console.log("tasks: ", res);
+    result(null, res);
+  });
+  
+}
+
 Task.GetTasksByDueDate = result => {
-  var today = moment(new Date().toLocaleDateString()).format('YYYY-MM-DD');
-  sql.query("SELECT * FROM Task WHERE t_active =1 AND t_due_date = ?", today, (err, res)=>{
+  var today = moment().format('YYYY-MM-DD');
+  sql.query("SELECT * FROM Task WHERE t_active =1 AND t_due_date = ?", [today], (err, res)=>{
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -113,7 +126,6 @@ Task.create = (newTask, taskCreation, result) => {
 */
 function getRecDate(freq, sdate, ddate, no) {
   var dateArr = [];
-
   switch (freq) {
     case "daily":
       sdate = add(sdate, {
@@ -178,9 +190,11 @@ Task.updateById = (id, task, result) => {
   );
 };
 //update task status by 1 am daily
-Task.updateStatus = result=>{
-  var today = moment(new Date().toLocaleDateString().substr(0,10)).format('YYYY-MM-DD'); 
-  sql.query("UPDATE task SET t_status = 4 WHERE t_due_date < ?", today, (err, res)=>{
+Task.updateStatus = (result) =>{
+  var today = moment().format('YYYY-MM-DD');
+  console.log('today:', today);
+ 
+  sql.query("UPDATE task SET t_status = 4 WHERE t_due_date < ? AND t_active = 1 ", [today], (err, res)=>{
     if (err) {
       console.log("error: ", err);
       result(null, err);
@@ -188,10 +202,10 @@ Task.updateStatus = result=>{
     }
     if (res.affectedRows == 0) {
       // not found task with the id
-      result({ kind: "not_found" }, null);
+      result(err, res);
       return;
     }
-    console.log('task status upadted....');
+    result(null,res);
     
   });
 }
@@ -203,20 +217,22 @@ Task.remove = (id, result) => {
       result(null, err);
       return;
     }
-
     if (res.affectedRows == 0) {
-      // not found task with the id
+      // not found Customer with the id
       result({ kind: "not_found" }, null);
       return;
     }
-    console.log("DELETED TASK: ", {id:id});
+
+    console.log("deleted task with id: ", id);
+    result(null, res);
+      
   });
 };
 
 
 Task.findByList = (t_category, result) => {
   console.log('List:',t_category);
-  sql.query("SELECT * FROM task WHERE t_category = ? ORDER BY t_priority", t_category, (err, res) => {
+  sql.query("SELECT * FROM task WHERE t_category = ? ORDER BY t_priority", [t_category], (err, res) => {
     if(err){
       console.log("error: ", err);
       result(null, err);

@@ -13,4 +13,6 @@ module.exports = app => {
     //get a list of tasks has similar name;
     app.put("/tasks/SearchName/:t_name", tasks.searchByName);
 
+    app.get('/OverDue', tasks.findOverdue);
+
  };

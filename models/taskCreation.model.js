@@ -1,6 +1,4 @@
 const sql = require("./db.js");
-var add = require('date-fns/add');
-var format = require('date-fns/format');
 
 // constructor
 const TaskCreation = function(taskCreation){

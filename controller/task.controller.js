@@ -1,8 +1,8 @@
 const Task = require("../models/task.model.js");
 const TaskCreation = require("../models/taskcreation.model.js");
-const Reminder = require("../models/reminder.model.js");
 const nodemailer = require('nodemailer');
 const cron = require("node-cron");
+const moment = require("moment");
 
 
 //set create task controller a set of functions in sequence
@@ -61,13 +61,24 @@ function createTaskEntries (req, res) {
 exports.findAll = (req, res) => {
     Task.getAll((err, data) => {
         if (err) {
-            const message = err.message || "Some error occurred while retrieving customers.";
+            const message = err.message || "Some error occurred while retrieving tasks.";
             res.status(500).json({ message });
         } else {
             res.json(data);
         }
     });
 };
+
+exports.findOverdue = (req, res)=>{
+  Task.getOverdue((err, data)=>{
+    if (err) {
+      const message = err.message || "Some error occurred while retrieving tasks.";
+      res.status(500).json({ message });
+    } else {
+      res.json(data);
+    }
+  });
+}
 
 // Find a single task with a name
 exports.searchByName = (req, res) => {
@@ -120,7 +131,6 @@ exports.remove = (req, res) => {
 
   Task.remove(
     req.params.t_id,
-    new Task(req.body),
     (err, data) => {
       if (err) {
         if (err.kind === "not_found") {
@@ -166,7 +176,7 @@ function getListTasks(req, res){
 function createBody(res){
   var txt = "Hi There,"+  "\n Here is your list of tasks!\n";    
   for(var i = 0; i < res.length; i++){
-      txt = txt + "\n" + (i+1) + ". "+ res[i].t_name +". priority: " +res[i].t_priority +". status: "+ res[i].t_status+ "\n";
+      txt = txt + "\n" + (i+1) + ". "+ res[i].t_name + "\n";
   }
   return txt; 
 }
@@ -205,21 +215,36 @@ function sendEmail(body, reqBody){
 }
 
 //update database task status to overdue if due date is passed
-cron.schedule("* 1 * * *", function() {
-  Task.updateStatus();
+
+cron.schedule("* * * * *", function(){
+  Task.updateStatus ((err,res) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found`
+        });
+      } else {
+        res.status(500).send({
+          message: `Error updating status.`
+        });
+      }
+    } 
+  });
 });
+  
+
 
 // scheduling sending out email reminder at 9 am everyday
-cron.schedule(" * 9 * * *", function(){
+cron.schedule(" * * * * *", function(){
   Task.GetTasksByDueDate((err,res)=>{
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
-          message: `Not found list id ${req.body.t_category}.`
+          message: `Not found.`
         });
       } else {
         res.status(500).send({
-          message: `Error retrieving tasks with list id:  ${req.body.t_category}.`
+          message: `Error retrieving tasks.`
         });
       }
     } 

@@ -73,7 +73,7 @@ Tag.getAll = result => {
   Tag.updateById = (id, tag, result) => {
     sql.query(
       "UPDATE Groupe SET g_name = ? WHERE g_id = ?",
-      [tag.g_name,tag.g_id],
+      [tag.g_name,id],
       (err, res) => {
         if (err) {
           console.log("error: ", err);
@@ -86,7 +86,7 @@ Tag.getAll = result => {
           result({ kind: "not_found" }, null);
           return;
         }
-        console.log("updated list: ", { ...tag });
+        console.log("updated tag: ", { ...tag });
         result(null, { ...tag });
       }
     );
