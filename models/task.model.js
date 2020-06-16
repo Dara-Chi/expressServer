@@ -67,7 +67,7 @@ Task.GetTasksByDueDate = result => {
 
 Task.searchByName = (t_name, result) => {
   var searchReg = "%"+t_name+"%";
-  sql.query(`SELECT * FROM Task WHERE t_name LIKE ? AND t_active = 1`,[searchReg], (err, res) => {
+  sql.query(`SELECT * FROM Task WHERE t_name LIKE ? AND t_active = 1 ORDER BY t_due_date`,[searchReg], (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -232,7 +232,7 @@ Task.remove = (id, result) => {
 
 Task.findByList = (t_category, result) => {
   console.log('List:',t_category);
-  sql.query("SELECT * FROM task WHERE t_category = ? ORDER BY t_priority", [t_category], (err, res) => {
+  sql.query("SELECT * FROM task WHERE t_category = ? AND t_active = 1 ORDER BY t_priority", [t_category], (err, res) => {
     if(err){
       console.log("error: ", err);
       result(null, err);

@@ -176,7 +176,7 @@ function getListTasks(req, res){
 function createBody(res){
   var txt = "Hi There,"+  "\n Here is your list of tasks!\n";    
   for(var i = 0; i < res.length; i++){
-      txt = txt + "\n" + (i+1) + ". "+ res[i].t_name + "\n";
+      txt = txt + "\n" + (i+1) + ". "+ res[i].t_name + "\n" + res[i].t_description+"\n";
   }
   return txt; 
 }
