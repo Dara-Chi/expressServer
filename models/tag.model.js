@@ -13,8 +13,8 @@ Tag.create = (newTag, result) => {
       return;
     }
 
-    console.log("created new tag/group: ", { id: res.insertId, ...newTag });
-    result(null, { id: res.insertId, ...newTag });
+    console.log("created new tag/group: ", { g_id: res.insertId, ...newTag });
+    result(null, { g_id: res.insertId, ...newTag });
   });
 };
 

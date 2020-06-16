@@ -12,8 +12,8 @@ List.create = (newList, result) => {
       return;
     }
 
-    console.log("created new list/category: ", { ...newList, id: res.insertId });
-    result(null, { ...newList, id: res.insertId });
+    console.log("created new list/category: ", { ...newList, c_id: res.insertId });
+    result(null, { ...newList, c_id: res.insertId });
   });
 };
 //give a single date object to find the list of tasks that are on same date.

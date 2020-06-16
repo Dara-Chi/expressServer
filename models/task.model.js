@@ -67,7 +67,7 @@ Task.GetTasksByDueDate = result => {
 
 Task.searchByName = (t_name, result) => {
   var searchReg = "%"+t_name+"%";
-  sql.query(`SELECT * FROM Task WHERE t_name LIKE ? AND t_active = 1`,searchReg, (err, res) => {
+  sql.query(`SELECT * FROM Task WHERE t_name LIKE ? AND t_active = 1`,[searchReg], (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -75,7 +75,7 @@ Task.searchByName = (t_name, result) => {
     }
     // if result row is not 0;
     if (res.length) {
-      console.log("found task: ", res);
+      console.log("found tasks: ", res);
       result(null, res);
       return;
     }

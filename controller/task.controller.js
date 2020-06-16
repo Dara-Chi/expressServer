@@ -2,7 +2,7 @@ const Task = require("../models/task.model.js");
 const TaskCreation = require("../models/taskcreation.model.js");
 const nodemailer = require('nodemailer');
 const cron = require("node-cron");
-const moment = require("moment");
+
 
 
 //set create task controller a set of functions in sequence
@@ -216,7 +216,7 @@ function sendEmail(body, reqBody){
 
 //update database task status to overdue if due date is passed
 
-cron.schedule("* * * * *", function(){
+cron.schedule("* 1 * * *", function(){
   Task.updateStatus ((err,res) => {
     if (err) {
       if (err.kind === "not_found") {
@@ -235,7 +235,7 @@ cron.schedule("* * * * *", function(){
 
 
 // scheduling sending out email reminder at 9 am everyday
-cron.schedule(" * * * * *", function(){
+cron.schedule(" * 9 * * *", function(){
   Task.GetTasksByDueDate((err,res)=>{
     if (err) {
       if (err.kind === "not_found") {
