@@ -264,7 +264,7 @@ function sendReminder(body){
   
   var mailOptions = {
     from: 'finishittodolist@gmail.com',
-    to: 'dara1214@gmail.com',
+    to: 'rbartels@swin.edu.au',
     subject: "your daily due tasks",
     text: body
   };
